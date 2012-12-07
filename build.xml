@@ -1,0 +1,63 @@
+<project name="picConvertor" basedir=".">
+	<!--global-->
+	<property name="src" location="${basedir}/src" />
+	<property name="lib" location="${basedir}/lib" />
+	<property name="target" location="${basedir}/target" />
+	<property name="target.build" location="${target}/classes" />
+	<property name="jar.file" location="${target}/${ant.project.name}.jar" />
+
+	<path id="class.path">
+		<fileset dir="${lib}">
+			<include name="**/*.jar"/>
+		</fileset>
+	</path>
+	<!--targets-->
+	<target name="clean">
+		<!--start time-->
+		<tstamp />
+		<!--remove old-->
+		<delete dir="${target}" failonerror="false" />
+	</target>
+	<target name="init">
+		<!--create target dirs-->
+		<mkdir dir="${target}" />
+		<mkdir dir="${target.build}" />
+	</target>
+	<target name="build">
+		<!--compile src-->
+		<javac srcdir="${src}" destdir="${target.build}" debug="true" debuglevel="lines,vars,source">
+			<classpath refid="class.path"/>
+		</javac>
+	</target>
+	<target name="copy.libs">
+		<!--copy all libs into plugin/lib dir-->
+		<mkdir dir="${target}/lib" />
+		<copy todir="${target}/lib">
+			<fileset dir="${lib}">
+				<include name="*.jar"/>
+			</fileset>
+		</copy>
+	</target>
+	<target name="make" depends="clean, init, build, copy.libs">
+		<!--creating class path for manifest, attention: work only since Ant 1.7-->
+		<manifestclasspath property="jar.class.path" jarfile="${jar.file}">
+			<classpath>
+				<fileset dir="${target}/lib">
+					<include name="**/*.jar" />
+				</fileset>
+			</classpath>
+		</manifestclasspath>
+		<!--create jar-->
+		<jar destfile="${jar.file}" basedir="${target.build}">
+			<fileset dir="${src}">
+				<include name="*.properties" />
+			</fileset>
+			<manifest>
+				<attribute name="Build-By" value="${user.name}" />
+				<attribute name="Main-Class" value="com.merzod.pic.MainClass" />
+				<attribute name="Class-Path" value="${jar.class.path}" />
+			</manifest>
+		</jar>
+	</target>
+		
+</project>
