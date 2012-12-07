@@ -1,4 +1,4 @@
-<project name="picConvertor" basedir=".">
+<project name="picConvertor" basedir="." default="make">
 	<!--global-->
 	<property name="src" location="${basedir}/src" />
 	<property name="lib" location="${basedir}/lib" />
